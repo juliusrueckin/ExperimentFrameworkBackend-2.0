@@ -1,0 +1,11 @@
+{
+    "env": "",
+    "path": "",
+    "cmd": "echo -n ",
+
+    "params": [
+        {"name": "a", "value": ["1","2"]},
+	{"name": "b", "value": ["3","4"]},
+	{"name": "c", "value": ["5","6"]}
+    ]
+}

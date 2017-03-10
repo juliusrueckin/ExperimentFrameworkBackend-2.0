@@ -1,0 +1,14 @@
+{
+    "name": "name test",
+    "env": "",
+    "path": "/home/lukas/work/experiments/examples",
+    "cmd": "python3 output.py",
+
+    "params": [
+        {"name": "x", "value": ["1","2","3","4"]}
+    ],
+    "outputs": [
+        {"name": "x", "pattern": "(input: )(\\d+(\\.\\d+)?)", "group": 2},
+        {"name": "x²", "pattern": "is (\\d+(\\.\\d+)?)", "group": 1}
+    ]
+}

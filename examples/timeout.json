@@ -1,0 +1,12 @@
+{
+    "env": "",
+    "path": "/home/lukas/work/experiments/examples",
+    "cmd": "python3 timeout.py",
+    "timeout": "5",
+    "params": [
+        {"name": "t", "value": ["2","11","3"]}
+    ],
+    "outputs": [
+        {"name": "sqrt", "pattern": "output: (\\d+(\\.\\d+)?)", "group": 1}
+    ]
+}

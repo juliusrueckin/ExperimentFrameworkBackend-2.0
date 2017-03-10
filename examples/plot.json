@@ -1,0 +1,22 @@
+{
+    "name": "name test",
+    "env": "",
+    "path": "/home/lukas/work/experiments/examples",
+    "cmd": "python3 plot.py",
+
+    "params": [
+        {"name": "x", "value": ["-3","-2.5","-2","-1.5","-1","-0.5","0","0.5","1","1.5","2","2.5","3"]}
+    ],
+    "outputs": [
+        {"name": "x²", "pattern": "squared: (-?\\d+(\\.\\d+)?)", "group": 1},
+        {"name": "x³", "pattern": "cubed: (-?\\d+(\\.\\d+)?)", "group": 1},
+        {"name": "abs", "pattern": "abs: (-?\\d+(\\.\\d+)?)", "group": 1},
+        {"name": "exp", "pattern": "exp: (-?\\d+(\\.\\d+)?)", "group": 1}
+    ],
+    "plots": [
+        {"x": "x", "y": ["x²","x³"]},
+	{"x": "x", "y": ["x²","abs"], "format": ["r--", "yo"]},
+	{"x": "x²", "y": ["x³"]},
+	{"x": "exp", "y": ["x"]}
+    ]
+}

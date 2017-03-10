@@ -4,6 +4,6 @@
     "cmd": "java -Xmx4G -jar target/graphdiff-1.0-SNAPSHOT.jar",
 
     "params": [
-        {"value": ["Brad_Pitt,George_Clooney,Leonardo_DiCaprio,Scarlett_Johansson,Johnny_Depp"]}
+        {"name": "seed", "value": ["Brad_Pitt,George_Clooney,Leonardo_DiCaprio,Scarlett_Johansson,Johnny_Depp"]}
     ]
 }
