@@ -1,20 +1,14 @@
-from sacred import Experiment
 import json
 import subprocess
 import re
 import itertools
 import time
 import os
+import sys
 
 import parser
 import writer
 import plot
-
-ex = Experiment('sacred_test')
-
-@ex.config
-def config():
-    cfgfile=None
 
 def extract_parameters(params):
     param_names = [p["name"] for p in params]
@@ -22,8 +16,8 @@ def extract_parameters(params):
     param_list = [perm for perm in itertools.product(*params)]
     return param_names, param_list
 
-@ex.automain
-def main(cfgfile):
+def main():
+    cfgfile = sys.argv[1]
     config = json.load(open(cfgfile))
     env = "" if config["env"] == "" else config["env"]
     cmd = config["cmd"]
@@ -45,13 +39,10 @@ def main(cfgfile):
             proc = subprocess.run(cmd_par,stdout=subprocess.PIPE, shell=True, timeout=timeout)
             open(resultdir + "stdout", "wb+").write(proc.stdout)
             result = a.parse(proc.stdout.decode())
-            print(result)
             csvwriter.save_complete(par_alloc, dict(result))
             p.save_complete(par_alloc, dict(result))
         except subprocess.TimeoutExpired:
             csvwriter.save_fail(par_alloc, "timeout")
     p.plot()
 
-
-
-
+main()
