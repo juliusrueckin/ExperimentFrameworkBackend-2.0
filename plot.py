@@ -2,10 +2,10 @@ import matplotlib.pyplot as plt
 
 class Plot():
     @classmethod
-    def parsePlot(cls,desc):
-        x = desc["x"]
-        y_list = desc["y"]
-        fmt = desc["format"] if "format" in desc else None
+    def parse_plot(cls,config):
+        x = config["x"]
+        y_list = config["y"]
+        fmt = config["format"] if "format" in config else None
         return cls(x, y_list,fmt)
     
     def __init__(self,x,y_list,fmt=None):
@@ -25,7 +25,7 @@ class Plot():
 
 class Plotter():
     def __init__(self, plots, path, name, names, param_names):
-        self.plotlist = [Plot.parsePlot(desc) for desc in plots]
+        self.plotlist = [Plot.parse_plot(desc) for desc in plots]
         self.path = path
         self.name = name
         self.results = {key:[] for key in names}

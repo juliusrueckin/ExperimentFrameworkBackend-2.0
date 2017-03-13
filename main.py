@@ -5,44 +5,52 @@ import itertools
 import time
 import os
 import sys
+import collections
 
 import parser
+import command
 import writer
 import plot
 
-def extract_parameters(params):
-    param_names = [p["name"] for p in params]
-    params = [x["value"] for x in params]
-    param_list = [perm for perm in itertools.product(*params)]
-    return param_names, param_list
+Parameters = collections.namedtuple('Parameters', ['names', 'assignments'])
 
-def main():
-    cfgfile = sys.argv[1]
-    config = json.load(open(cfgfile))
-    env = "" if config["env"] == "" else config["env"]
-    cmd = config["cmd"]
-    name = config["name"] if "name" in config else ""
-    a = parser.Parser(config["outputs"] if "outputs" in config else [])
-    resultdir = "results/" + str(round(time.time()*1000)) + "/"
-    if not os.path.exists(resultdir):
-        os.makedirs(resultdir)
-    csvwriter = writer.CSVWriter(resultdir, name, env, cmd, a.names())
-    cmd_string = "{0} {1} {2}".format(
-        env, "" if config["path"] =="" else "cd " + config["path"] + "&& ", config["cmd"])
-    timeout = float(config["timeout"]) if "timeout" in config else None
-    names, param_list = extract_parameters(config["params"])
-    p = plot.Plotter(config["plots"], resultdir, name,a.names(), names)
-    for par in param_list:
-        par_alloc = ",".join([names[i] + "=" + par[i] for i in range(0,len(names))])
-        cmd_par = cmd_string + " " + " ".join(par)
-        try:
-            proc = subprocess.run(cmd_par,stdout=subprocess.PIPE, shell=True, timeout=timeout)
-            open(resultdir + "stdout", "wb+").write(proc.stdout)
-            result = a.parse(proc.stdout.decode())
-            csvwriter.save_complete(par_alloc, dict(result))
-            p.save_complete(par_alloc, dict(result))
-        except subprocess.TimeoutExpired:
-            csvwriter.save_fail(par_alloc, "timeout")
-    p.plot()
+class Experiment():
+    def __init__(self, config):
+        self.name = config["name"] if "name" in config else ""
+        self.command = command.Command.parse_command(config)
+        self.params = self.extract_parameters(config["params"])
+        self.result_dir = "results/" + str(round(time.time()*1000)) + "/"
+        self.timeout = float(config["timeout"]) if "timeout" in config else None
+        os.makedirs(self.result_dir)
+        self.parser = parser.Parser(config["outputs"] if "outputs" in config else [])
+        self.writer = writer.CSVWriter(self.result_dir, self.name, self.command.env, self.command.cmd, self.parser.names())
+        self.plotter = plot.Plotter(config["plots"] if "plots" in config else [], self.result_dir, self.name, self.parser.names(), self.params.names)
+    
+    def extract_parameters(self,params):
+        param_names = [p["name"] for p in params]
+        params = [x["value"] for x in params]
+        param_list = [perm for perm in itertools.product(*params)]
+        return Parameters(param_names, param_list)
 
-main()
+    def run_experiment(self):
+        for par in self.params.assignments:
+            par_alloc = ",".join([self.params.names[i] + "=" + par[i] for i in range(0,len(par))])
+            execution = self.command.execute(par)
+            with open(self.result_dir + str(par) + "stdout", "w+") as out:
+                out.write(execution.stdout)
+            with open(self.result_dir + str(par) + "stderr", "w+") as err:
+                err.write(execution.stderr)
+            if execution.timeout:
+                self.writer.save_fail(par_alloc, "timeout")
+            elif execution.exit_code:
+                self.writer.save_fail(par_alloc, execution.error_code)
+            else:
+                result = self.parser.parse(execution.stdout)
+                self.writer.save_complete(par_alloc, dict(result))
+                self.plotter.save_complete(par_alloc, dict(result))
+        self.plotter.plot()
+
+cfgfile = sys.argv[1]
+config = json.load(open(cfgfile))
+exp = Experiment(config)
+exp.run_experiment()
