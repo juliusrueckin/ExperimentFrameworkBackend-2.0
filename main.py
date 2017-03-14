@@ -20,7 +20,6 @@ class Experiment():
         self.command = command.Command.parse_command(config)
         self.params = self.extract_parameters(config["params"])
         self.result_dir = "results/" + str(round(time.time()*1000)) + "/"
-        self.timeout = float(config["timeout"]) if "timeout" in config else None
         os.makedirs(self.result_dir)
         self.parser = parser.Parser(config["outputs"] if "outputs" in config else [])
         self.writer = writer.CSVWriter(self.result_dir, self.name, self.command.env, self.command.cmd, self.parser.names())
@@ -43,7 +42,10 @@ class Experiment():
             if execution.timeout:
                 self.writer.save_fail(par_alloc, "timeout")
             elif execution.exit_code:
-                self.writer.save_fail(par_alloc, execution.error_code)
+                errors = re.findall("^(.*?(?:(?:error)|(?:exception)).*?)$", execution.stderr, flags=re.I|re.M)
+                print(errors)
+                error = '\n'.join(errors) if errors else execution.exit_code
+                self.writer.save_fail(par_alloc, error)
             else:
                 result = self.parser.parse(execution.stdout)
                 self.writer.save_complete(par_alloc, dict(result))

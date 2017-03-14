@@ -32,3 +32,7 @@ class Command():
             os.killpg(os.getpgid(proc.pid),signal.SIGTERM)
             out, err = proc.communicate()
             return Execution(True, None, out.decode(), err.decode())
+        except:
+            os.killpg(os.getpgid(proc.pid),signal.SIGTERM)
+            out, err = proc.communicate()
+            return Execution(False, proc.returncode, out.decode(), err.decode())
