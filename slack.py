@@ -10,6 +10,11 @@ class SlackNotifier():
         self.webhook = webhook
 
     def save_complete(self,par_alloc):
-        data='{"text": "Experiment with configuration ' + par_alloc + ' passed succesfully"}'
+        data='{"text": ":white_check_mark: for configuration ' + par_alloc + '"}'
+        print(data)
+        requests.post(self.webhook, headers={'Content-type': 'application/json'}, data=data)
+
+    def save_fail(self,par_alloc, error):
+        data='{"text": ":x: for configuration ' + par_alloc + ' with error: ' + error + '"}'
         print(data)
         requests.post(self.webhook, headers={'Content-type': 'application/json'}, data=data)
