@@ -34,6 +34,7 @@ class Experiment():
         return Parameters(param_names, param_list)
 
     def run_experiment(self):
+        self.slack.start_experiment()
         for par in self.params.assignments:
             par_alloc = ",".join([self.params.names[i] + "=" + par[i] for i in range(0,len(par))])
             execution = self.command.execute(par)
@@ -56,6 +57,7 @@ class Experiment():
                 self.writer.save_complete(par_alloc, dict(result))
                 self.plotter.save_complete(par_alloc, dict(result))
                 self.slack.save_complete(par_alloc)
+        self.slack.finish_experiment()
         self.plotter.plot()
 
 cfgfile = sys.argv[1]
