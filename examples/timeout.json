@@ -8,5 +8,6 @@
     ],
     "outputs": [
         {"name": "sqrt", "pattern": "output: (\\d+(\\.\\d+)?)", "group": 1}
-    ]
+    ],
+    "url": "https://hooks.slack.com/services/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"
 }

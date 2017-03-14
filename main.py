@@ -11,6 +11,7 @@ import parser
 import command
 import writer
 import plot
+import slack
 
 Parameters = collections.namedtuple('Parameters', ['names', 'assignments'])
 
@@ -24,6 +25,7 @@ class Experiment():
         self.parser = parser.Parser(config["outputs"] if "outputs" in config else [])
         self.writer = writer.CSVWriter(self.result_dir, self.name, self.command.env, self.command.cmd, self.parser.names())
         self.plotter = plot.Plotter(config["plots"] if "plots" in config else [], self.result_dir, self.name, self.parser.names(), self.params.names)
+        self.slack = slack.SlackNotifier.parse_slack(config)
     
     def extract_parameters(self,params):
         param_names = [p["name"] for p in params]
@@ -42,7 +44,8 @@ class Experiment():
             if execution.timeout:
                 self.writer.save_fail(par_alloc, "timeout")
             elif execution.exit_code:
-                errors = re.findall("^(.*?(?:(?:error)|(?:exception)).*?)$", execution.stderr, flags=re.I|re.M)
+                errors = re.findall("^(.*?(?:(?:error)|(?:exception)).*?)$", 
+                    execution.stderr, flags=re.I|re.M)
                 print(errors)
                 error = '\n'.join(errors) if errors else execution.exit_code
                 self.writer.save_fail(par_alloc, error)
@@ -50,6 +53,7 @@ class Experiment():
                 result = self.parser.parse(execution.stdout)
                 self.writer.save_complete(par_alloc, dict(result))
                 self.plotter.save_complete(par_alloc, dict(result))
+                self.slack.save_complete(par_alloc)
         self.plotter.plot()
 
 cfgfile = sys.argv[1]

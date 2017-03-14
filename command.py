@@ -10,7 +10,6 @@ class Command():
     def parse_command(cls, config):
         cmd = " exec " + config["cmd"]
         path = " cd " + config["path"] + " && " if "path" in config else ""
-        #path = "cd " + config["path"] if "path" in config else ""
         env = config["env"] if "env" in config else ""
         timeout = float(config["timeout"]) if "timeout" in config else None
         return cls(env,path, cmd, timeout)
