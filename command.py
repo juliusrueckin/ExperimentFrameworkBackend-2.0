@@ -2,8 +2,9 @@ import subprocess
 import collections
 import os
 import signal
+import time
 
-Execution = collections.namedtuple('Execution', ['timeout', 'exit_code', 'stdout', 'stderr'])
+Execution = collections.namedtuple('Execution', ['params', 'timeout', 'exit_code', 'stdout', 'stderr'])
 
 class Command():
     @classmethod
@@ -26,12 +27,12 @@ class Command():
         proc = subprocess.Popen(cmd_par,stdout=subprocess.PIPE, stderr = subprocess.PIPE, shell=True, preexec_fn=os.setsid)
         try:
             out, err = proc.communicate(timeout=self.timeout)
-            return Execution(False, proc.returncode, out.decode(), err.decode())
+            return Execution(params, False, proc.returncode, out.decode(), err.decode())
         except subprocess.TimeoutExpired:
             os.killpg(os.getpgid(proc.pid),signal.SIGTERM)
             out, err = proc.communicate()
-            return Execution(True, None, out.decode(), err.decode())
+            return Execution(params, True, None, out.decode(), err.decode())
         except:
             os.killpg(os.getpgid(proc.pid),signal.SIGTERM)
             out, err = proc.communicate()
-            return Execution(False, proc.returncode, out.decode(), err.decode())
+            return Execution(params, False, proc.returncode, out.decode(), err.decode())

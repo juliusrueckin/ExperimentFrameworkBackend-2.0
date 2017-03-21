@@ -1,11 +1,11 @@
 import json
-import subprocess
 import re
 import itertools
 import time
 import os
 import sys
 import collections
+import multiprocessing as mp
 
 from parser import Parser
 from command import Command
@@ -18,6 +18,7 @@ Parameters = collections.namedtuple('Parameters', ['names', 'assignments'])
 class Experiment():
     def __init__(self, config):
         self.name = config["name"] if "name" in config else ""
+        self.cores = int(config["cores"]) if "cores" in config else 1
         self.command = Command.parse_command(config)
         self.params = self.extract_parameters(config["params"])
         self.result_dir = "results/" + str(round(time.time()*1000)) + "/"
@@ -35,14 +36,16 @@ class Experiment():
 
     def run_experiment(self):
         self.slack.start_experiment()
-        for par in self.params.assignments:
-            self.run(par)
+        with mp.Pool(3) as pool:
+            res = [pool.apply_async(self.command.execute, (par,), callback=self.handle_result) for par in self.params.assignments]
+            for r in res:
+                r.wait()
         self.slack.finish_experiment()
         self.plotter.plot()
 
-    def run(self, par):
+    def handle_result(self, execution):
+        par = execution.params
         par_alloc = ",".join([self.params.names[i] + "=" + par[i] for i in range(0,len(par))])
-        execution = self.command.execute(par)
         with open(self.result_dir + str(par) + "stdout", "w+") as out:
             out.write(execution.stdout)
         with open(self.result_dir + str(par) + "stderr", "w+") as err:
@@ -62,6 +65,11 @@ class Experiment():
             self.writer.save_complete(par_alloc, dict(result))
             self.plotter.save_complete(par_alloc, dict(result))
             self.slack.save_complete(par_alloc)
+
+    def run(self, par):
+
+        execution = self.command.execute(par)
+        
 
 cfgfile = sys.argv[1]
 config = json.load(open(cfgfile))

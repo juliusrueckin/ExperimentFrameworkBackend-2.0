@@ -14,11 +14,11 @@ class Parser():
     def __init__(self,outputs):
         self.outputs = outputs
 
-    def parse(self, output):
+    def parse(self, output_text):
         result = {}
         for (name, pattern, group) in self.outputs:
             result[name] = None
-            m = re.search(pattern, output)
+            m = re.search(pattern, output_text)
             if m is not None:
                 result[name] = m.group(group)
         return result
