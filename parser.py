@@ -1,28 +1,30 @@
 import re
 import time
+import collections
+
+Output = collections.namedtuple('Output', ['name', 'regex', 'group'])
 
 class Parser():
+    @classmethod
+    def parse_outputs(cls,config):
+        desc = config["outputs"] if "outputs" in config else []
+        outputs = [Output(o["name"],o["pattern"],o["group"]) for o in desc]
+        return cls(outputs)
 
     def __init__(self,outputs):
-        self.results={}
-        self.expr = []
-        self.count = 0
-        for output in outputs:
-            self.results[output["name"]]=None
-            self.expr.append((output["name"], output["pattern"], output["group"]))
+        self.outputs = outputs
 
     def parse(self, output):
-        for (name, pattern, group) in self.expr:
+        result = {}
+        for (name, pattern, group) in self.outputs:
+            result[name] = None
             m = re.search(pattern, output)
             if m is not None:
-                self.results[name] = m.group(group)
-        result = dict(self.results)
-        for key in self.results:
-            self.results[key]=None
+                result[name] = m.group(group)
         return result
 
     def names(self):
-        return self.results.keys()
+        return [o.name for o in self.outputs]
             
         
 

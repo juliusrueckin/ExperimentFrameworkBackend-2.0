@@ -4,7 +4,7 @@ import collections
 class SlackNotifier():
     @classmethod
     def parse_slack(cls, config):
-        webhook = config["url"]
+        webhook = config["url"] if "url" in config else ""
         env = config["env"]
         cmd = config["cmd"]
         verbose = True if "verbose" in config else False
@@ -19,22 +19,26 @@ class SlackNotifier():
         self.failed = 0
 
     def start_experiment(self):
-        data='{"text": "Experiment ' + self.cmd + ' with variables ' + self.env + ' started"}'
-        self.send_message(data)
+        if self.webhook:
+            data = '{{"text": "Experiment {0} with variables {1} started"}}'
+            self.send_message(data.format(self.cmd, self.env))
     
     def finish_experiment(self):
-        data='{"text": "Experiment finished, ' + str(self.completed) + ' completed and ' + str(self.failed) + 'failed runs"}'
-        self.send_message(data)
+        if self.webhook:
+            data = '{{"text": "Experiment finished, {0} completed and {1} failed runs"}}'
+            self.send_message(data.format(self.completed, self.failed))
 
     def save_complete(self,par_alloc):
-        data='{"text": ":white_check_mark: for configuration ' + par_alloc + '"}'
-        self.send_message(data)
         self.completed += 1
+        if self.webhook and self.verbose:
+            data = '{{"text": ":white_check_mark: for configuration {0}"}}'
+            self.send_message(data.format(par_alloc))
 
     def save_fail(self,par_alloc, error):
-        data='{"text": ":x: for configuration ' + par_alloc + ' with error: ' + error + '"}'
-        self.send_message(data)
         self.failed += 1
+        if self.webhook and self.verbose:
+            data='{{"text": ":x: for configuration {0} with error: {1}"}}'
+            self.send_message(data.format(par_alloc, error))
 
     def send_message(self,data):
         requests.post(self.webhook, headers={'Content-type': 'application/json'}, data=data)

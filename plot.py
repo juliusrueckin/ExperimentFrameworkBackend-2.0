@@ -24,7 +24,8 @@ class Plot():
         plt.clf()
 
 class Plotter():
-    def __init__(self, plots, path, name, names, param_names):
+    def __init__(self, config, path, name, names, param_names):
+        plots = config["plots"] if "plots" in config else []
         self.plotlist = [Plot.parse_plot(desc) for desc in plots]
         self.path = path
         self.name = name

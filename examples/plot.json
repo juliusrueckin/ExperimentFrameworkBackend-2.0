@@ -18,5 +18,6 @@
 	{"x": "x", "y": ["x²","abs"], "format": ["r--", "yo"]},
 	{"x": "x²", "y": ["x³"]},
 	{"x": "exp", "y": ["x"]}
-    ]
+    ],
+    "url": "https://hooks.slack.com/services/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"
 }

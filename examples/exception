@@ -1,0 +1,19 @@
+Exception in Application start method
+java.lang.reflect.InvocationTargetException
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+    at java.lang.reflect.Method.invoke(Unknown Source)
+    at com.sun.javafx.application.LauncherImpl.launchApplicationWithArgs(Unknown Source)
+    at com.sun.javafx.application.LauncherImpl.launchApplication(Unknown Source)
+    at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+    at sun.reflect.NativeMethodAccessorImpl.invoke(Unknown Source)
+    at sun.reflect.DelegatingMethodAccessorImpl.invoke(Unknown Source)
+    at java.lang.reflect.Method.invoke(Unknown Source)
+    at sun.launcher.LauncherHelper$FXHelper.main(Unknown Source)
+Caused by: java.lang.RuntimeException: Exception in Application start method
+    at com.sun.javafx.application.LauncherImpl.launchApplication1(Unknown Source)
+    at com.sun.javafx.application.LauncherImpl.lambda$launchApplication$152(Unknown Source)
+    at com.sun.javafx.application.LauncherImpl$$Lambda$50/1645995473.run(Unknown Source)
+    at java.lang.Thread.run(Unknown Source)
+Caused by: javafx.fxml.LoadException: 

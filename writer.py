@@ -10,13 +10,12 @@ class CSVWriter():
             self.fields.append(key)
         self.time = round(time.time() * 1000)
         self.name = name
-        self.filename = "results" + ".csv"
-        self.file = open(path + self.filename, "w", newline="")
-        self.writer = csv.DictWriter(self.file, self.fields, restval=None)
-        self.writer.writeheader()
         self.env = env
         self.cmd = cmd
         self.param = cmd
+        self.file = open(path + "results.csv", "w", newline="")
+        self.writer = csv.DictWriter(self.file, self.fields, restval=None)
+        self.writer.writeheader()
 
     def save_complete(self, params, result):
         self.add_metadata(result)
