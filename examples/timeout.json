@@ -3,11 +3,13 @@
     "path": "/home/lukas/work/experiments/examples",
     "cmd": "python3 timeout.py",
     "timeout": "5",
+    "error": "^(.*?(?:(?:error)|(?:exception)).*?)$",
     "params": [
         {"name": "t", "value": ["2","11","3"]}
     ],
     "outputs": [
         {"name": "sqrt", "pattern": "output: (\\d+(\\.\\d+)?)", "group": 1}
     ],
-    "url": "https://hooks.slack.com/services/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"
+    "url": "https://hooks.slack.com/services/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",
+    "verbose": 1
 }

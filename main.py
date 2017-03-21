@@ -9,6 +9,7 @@ import multiprocessing as mp
 
 from parser import Parser
 from command import Command
+from command import Execution
 from writer import CSVWriter
 from plot import Plotter
 from slack import SlackNotifier
@@ -50,25 +51,14 @@ class Experiment():
             out.write(execution.stdout)
         with open(self.result_dir + str(par) + "stderr", "w+") as err:
             err.write(execution.stderr)
-        if execution.timeout:
-            self.writer.save_fail(par_alloc, "timeout")
-            self.slack.save_fail(par_alloc, "timeout")
-        elif execution.exit_code:
-            errors = re.findall("^(.*?(?:(?:error)|(?:exception)).*?)$", 
-                execution.stderr, flags=re.I|re.M)
-            print(errors)
-            error = '\n'.join(errors) if errors else execution.exit_code
-            self.writer.save_fail(par_alloc, error)
-            self.slack.save_fail(par_alloc, error)
+        if execution.exit_code:
+            self.writer.save_fail(par_alloc, execution.error)
+            self.slack.save_fail(par_alloc, execution.error)
         else:
             result = self.parser.parse(execution.stdout)
             self.writer.save_complete(par_alloc, dict(result))
             self.plotter.save_complete(par_alloc, dict(result))
             self.slack.save_complete(par_alloc)
-
-    def run(self, par):
-
-        execution = self.command.execute(par)
         
 
 cfgfile = sys.argv[1]
