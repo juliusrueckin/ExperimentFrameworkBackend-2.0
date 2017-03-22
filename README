@@ -1,0 +1,18 @@
+# Framework for automatically runnning experimental evaluations
+
+## Purpose
+
+Usually the same steps are necessary to evaluate an algorithm. The algorithm needs to be configurated with many different parameters. For each parameters we need to find an optimal setting. Then, we need to compare the algorithm among other algorithms by means of oberserved characteristics e.g runtime, consumed memory or classification accuracy. This frameworks aims at automating abovementioned steps.
+
+## Features
+
+- Running arbitrary algorithms as black box programs
+- The framework supports definitions of parameters with a set of possible values
+- For an experiment all combinations of all parameters are tested
+- Automated extraction of experiment observation with regex on the standart output
+- Automated plotting of specified graphs
+- Notification service for slack
+- Configurable number of concurrent runs
+
+## Dependencies
+This project depends on python's matplotlib to create plots
