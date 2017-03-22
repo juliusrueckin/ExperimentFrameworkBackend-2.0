@@ -17,6 +17,7 @@ from slack import SlackNotifier
 Parameters = collections.namedtuple('Parameters', ['names', 'assignments'])
 
 class Experiment():
+
     def __init__(self, config):
         self.name = config["name"] if "name" in config else ""
         self.cores = int(config["cores"]) if "cores" in config else 1
@@ -62,6 +63,6 @@ class Experiment():
         
 
 cfgfile = sys.argv[1]
-config = json.load(open(cfgfile))
+config = json.load(open(cfgfile,"r"))
 exp = Experiment(config)
 exp.run_experiment()

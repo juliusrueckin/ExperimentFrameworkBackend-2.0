@@ -23,7 +23,6 @@ class Command():
         self.path = path
         self.timeout = timeout
         self.error_regex = error_regex
-        print(self.error_regex)
 
     def execute(self, params):
         cmd_par = self.env + self.path + self.cmd + " " + " ".join(params)

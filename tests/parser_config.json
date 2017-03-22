@@ -1,0 +1,6 @@
+{
+    "outputs": [
+        {"name": "value1", "pattern" : "examp(le) pattern", "group": 1},
+        {"name": "number", "pattern": "(-?\\d+(\\.\\d+)?)", "group": 1}
+    ]
+}
