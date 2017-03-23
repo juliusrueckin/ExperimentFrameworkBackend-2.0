@@ -5,7 +5,7 @@ import collections
 Output = collections.namedtuple('Output', ['name', 'regex', 'group'])
 
 class Parser():
-    """This class extracts experiment observations out of a string based on regular expressions.""" 
+    """This class extracts experiment observations out of strings based on regular expressions.""" 
     @classmethod
     def parse_outputs(cls,config):
         """Create the parser object from its json specification"""

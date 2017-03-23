@@ -1,0 +1,6 @@
+{
+    "url": "http://example.org",
+    "env": "A=hello",
+    "cmd": "echo 1",
+    "verbose": 1
+}

@@ -14,5 +14,11 @@ Usually the same steps are necessary to evaluate an algorithm. The algorithm nee
 - Notification service for slack
 - Configurable number of concurrent runs
 
+## Tests
+
+- to wirk with pathing, run the tests from the root directory
+
 ## Dependencies
-This project depends on python's matplotlib to create plots
+This project depends on 
+    python's matplotlib to create plots
+    python module httmock for unit tests
