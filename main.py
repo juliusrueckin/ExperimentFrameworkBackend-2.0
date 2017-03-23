@@ -11,7 +11,7 @@ from parser import Parser
 from command import Command
 from command import Execution
 from writer import CSVWriter
-from plot import Plotter
+from plotter import Plotter
 from slack import SlackNotifier
 
 Parameters = collections.namedtuple('Parameters', ['names', 'assignments'])

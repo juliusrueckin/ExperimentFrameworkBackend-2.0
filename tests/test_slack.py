@@ -21,7 +21,7 @@ class TestSlack(unittest.TestCase):
     def handle_post(self, url, request):
         self.assertEqual("http://example.org/", url.geturl())
         if self.expected_data:
-            self.assertEqual(self.expected_data, request.body)
+            self.assertEqual(self.expected_data, request.body, msg="Wrong message body was sent")
         return {'status_code':200}
 
     @httmock.all_requests
