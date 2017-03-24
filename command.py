@@ -10,8 +10,9 @@ Execution = collections.namedtuple('Execution', ['params', 'timeout', 'error', '
 class Command():
     @classmethod
     def parse_command(cls, config):
-        cmd = " exec " + config["cmd"]
-        path = " cd " + config["path"] + " && " if "path" in config else ""
+        """Extract the configuration from the .json file."""
+        cmd = config["cmd"]
+        path = config["path"] if "path" in config else ""
         env = config["env"] if "env" in config else ""
         timeout = float(config["timeout"]) if "timeout" in config else None
         error_regex = config["error"] if "error" in config else ".\A"
@@ -24,9 +25,25 @@ class Command():
         self.timeout = timeout
         self.error_regex = error_regex
 
+    def get_execute_command(self):
+        """Assemble the command to execute from environment, path and cmd."""
+        if self.path:
+            return self.env + " cd " + self.path + " && " + self.cmd
+        else:
+            return self.env + " " + self.cmd
+
     def execute(self, params):
-        cmd_par = self.env + self.path + self.cmd + " " + " ".join(params)
-        print (cmd_par)
+        """Execute the command parametrized by the given parameters
+
+        Open a subprocess to execute the command. After the subprocess ends collect the contents
+        of stdout and stderr. If the execution stops with an error extract the error given the optional
+        error regex from the configuration. Return these with an exit_code 
+
+        Can optionally set a timeout in the configuration. If so, terminate the subprocess and all
+        children after the timeout, collect stdout and stderr so far and return them. Additionally
+        set the timeout flag to True
+        """
+        cmd_par = self.get_execute_command() + " " + " ".join(params)
         proc = subprocess.Popen(cmd_par,stdout=subprocess.PIPE, stderr = subprocess.PIPE, shell=True, preexec_fn=os.setsid)
         try:
             out, err = proc.communicate(timeout=self.timeout)

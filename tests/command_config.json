@@ -1,0 +1,5 @@
+{
+    "env": "A=hello",
+    "cmd": "echo 1 && sleep",
+    "timeout": 2
+}
