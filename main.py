@@ -27,7 +27,7 @@ class Experiment():
         os.makedirs(self.result_dir)
         self.parser = Parser.parse_outputs(config)
         self.writer = CSVWriter(self.result_dir, self.name, self.command.env, self.command.cmd, self.parser.names())
-        self.plotter = Plotter(config, self.result_dir, self.name, self.parser.names(), self.params.names)
+        self.plotter = Plotter(config, self.parser.names(), self.params.names)
         self.slack = SlackNotifier.parse_slack(config)
     
     def extract_parameters(self,params):
@@ -43,7 +43,7 @@ class Experiment():
             for r in res:
                 r.wait()
         self.slack.finish_experiment()
-        self.plotter.plot()
+        self.plotter.plot(self.result_dir)
 
     def handle_result(self, execution):
         par = execution.params
