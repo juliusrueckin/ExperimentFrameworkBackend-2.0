@@ -56,7 +56,7 @@ class TestSlack(unittest.TestCase):
             self.slack.save_complete("a=1")
 
     def test_save_fail(self):
-        self.expected_data = '{"text": ":x: for configuration a=1 with error: timeout"}'
+        self.expected_data = '{"text": ":x: Error timeout for run with configuration a=1"}'
         with httmock.HTTMock(self.handle_post):
             self.v_slack.save_fail("a=1", "timeout")
         with httmock.HTTMock(self.fail_on_post):

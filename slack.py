@@ -43,8 +43,8 @@ class SlackNotifier():
         """If verbose, notify the failed termination of a single run."""
         self.failed += 1
         if self.webhook and self.verbose:
-            data='{{"text": ":x: for configuration {0} with error: {1}"}}'
-            self.send_message(data.format(par_alloc, error))
+            data='{{"text": ":x: Error {0} for run with configuration {1}"}}'
+            self.send_message(data.format(error, par_alloc))
 
     def send_message(self,data):
         """Prepare and send the POST request to Slack."""
