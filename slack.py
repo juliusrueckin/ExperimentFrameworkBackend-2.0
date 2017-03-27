@@ -32,7 +32,7 @@ class SlackNotifier():
             data = '{{"text": "Experiment finished, {0} completed and {1} failed runs"}}'
             self.send_message(data.format(self.completed, self.failed))
 
-    def save_complete(self,par_alloc):
+    def save_complete(self,par_alloc,result):
         """If verbose, notify the successful termination of a single run."""
         self.completed += 1
         if self.webhook and self.verbose:

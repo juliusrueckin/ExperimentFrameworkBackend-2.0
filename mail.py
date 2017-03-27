@@ -38,16 +38,16 @@ class MailNotifier():
         start_text = "Experiment {0} with variables {1} started\n"
         self.message += start_text.format(self.cmd, self.env)
 
-    def save_complete(self, par_alloc):
+    def save_complete(self, par_alloc, result):
         """Record the completion of one run in the mail body."""
         self.completed += 1
-        complete_text = "    Completed run for configuration {0}"
+        complete_text = "    Completed run for configuration {0}\n"
         self.message += complete_text.format(par_alloc)
 
     def save_fail(self, par_alloc, error):
         """Record the failure of one run in the mail body."""
         self.failed += 1
-        fail_text = "    Error {0} for run with configuration {1}"
+        fail_text = "    Error {0} for run with configuration {1}\n"
         self.message += fail_text.format(error, par_alloc)
 
     def finish_experiment(self):
@@ -67,6 +67,7 @@ class MailNotifier():
         else:
             s = smtplib.SMTP(self.server)
             s.ehlo()
+            self.user="Test@example.org"
         content = MIMEText(self.message)
         content["Subject"] = "Experiment results"
         content["From"] = self.user

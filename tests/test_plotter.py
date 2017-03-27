@@ -10,7 +10,7 @@ class TestPlotter(unittest.TestCase):
     def setUp(self):
         with open("tests/plotter_config.json","r") as file:
             config = json.load(file)
-        self.plotter = Plotter(config, ["x²","abs"],["a"])
+        self.plotter = Plotter(config, ["x²","abs"],["a"],"tests/")
 
     def tearDown(self):
         if os.path.isfile("tests/a['x²'].pdf"):
@@ -33,11 +33,11 @@ class TestPlotter(unittest.TestCase):
         self.assertEqual({"a":[], "x²":[], "abs":[]}, self.plotter.results,
             msg="Plot data changed after a failed run")
 
-    def test_plot(self):
+    def test_finish_experiment(self):
         self.plotter.save_complete("a=-2", {"x²":4, "abs":2})
         self.plotter.save_complete("a=1", {"x²":1, "abs":1})
-        self.plotter.plot("tests/")
+        self.plotter.finish_experiment()
         self.assertTrue(os.path.isfile("tests/a['x²'].pdf")
             and os.path.isfile("tests/a['x²', 'abs'].pdf"),
-            msg="Plotter.plot did not create both configured plots")
+            msg="Plotter did not create both configured plots")
 

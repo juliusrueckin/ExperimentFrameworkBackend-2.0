@@ -13,6 +13,7 @@ from command import Execution
 from writer import CSVWriter
 from plotter import Plotter
 from slack import SlackNotifier
+from mail import MailNotifier
 
 Parameters = collections.namedtuple('Parameters', ['names', 'assignments'])
 
@@ -26,9 +27,15 @@ class Experiment():
         self.result_dir = "results/" + str(round(time.time()*1000)) + "/"
         os.makedirs(self.result_dir)
         self.parser = Parser.parse_outputs(config)
-        self.writer = CSVWriter(self.result_dir, self.name, self.command.env, self.command.cmd, self.parser.names())
-        self.plotter = Plotter(config, self.parser.names(), self.params.names)
-        self.slack = SlackNotifier.parse_slack(config)
+        self.observers = []
+        if "plots" in config:
+            self.observers.append(Plotter(config,self.parser.names(), self.params.names, self.result_dir))
+        if "url" in config:
+            self.observers.append(SlackNotifier.parse_slack(config))
+        if "mail" in config:
+            self.observers.append(MailNotifier.parse_mail(config))
+        if "csv" in config:
+            self.observers.append(CSVWriter(self.result_dir, self.name, self.command.env, self.command.cmd, self.parser.names()))
     
     def extract_parameters(self,params):
         param_names = [p["name"] for p in params]
@@ -37,13 +44,14 @@ class Experiment():
         return Parameters(param_names, param_list)
 
     def run_experiment(self):
-        self.slack.start_experiment()
+        for ob in self.observers:
+            ob.start_experiment()
         with mp.Pool(3) as pool:
             res = [pool.apply_async(self.command.execute, (par,), callback=self.handle_result) for par in self.params.assignments]
             for r in res:
                 r.wait()
-        self.slack.finish_experiment()
-        self.plotter.plot(self.result_dir)
+        for ob in self.observers:
+            ob.finish_experiment()
 
     def handle_result(self, execution):
         par = execution.params
@@ -53,14 +61,12 @@ class Experiment():
         with open(self.result_dir + str(par) + "stderr", "w+") as err:
             err.write(execution.stderr)
         if execution.exit_code:
-            self.writer.save_fail(par_alloc, execution.error)
-            self.slack.save_fail(par_alloc, execution.error)
+            for ob in self.observers:
+                ob.save_fail(par_alloc, execution.error)
         else:
             result = self.parser.parse(execution.stdout)
-            self.writer.save_complete(par_alloc, dict(result))
-            self.plotter.save_complete(par_alloc, dict(result))
-            self.slack.save_complete(par_alloc)
-        
+            for ob in self.observers:
+                ob.save_complete(par_alloc, result)        
 
 cfgfile = sys.argv[1]
 config = json.load(open(cfgfile,"r"))

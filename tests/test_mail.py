@@ -26,12 +26,12 @@ class TestMail(unittest.TestCase):
 
     def test_save_complete(self):
         self.mail.save_complete("a=1")
-        expected = "    Completed run for configuration a=1"
+        expected = "    Completed run for configuration a=1\n"
         self.assertEqual(expected, self.mail.message, msg = "Wrong text for completed run")
 
     def test_save_fail(self):
         self.mail.save_fail("a=1", "timeout")
-        expected = "    Error timeout for run with configuration a=1"
+        expected = "    Error timeout for run with configuration a=1\n"
         self.assertEqual(expected, self.mail.message, msg = "Wrong text for failed run")
 
     def test_finish_experiment(self):

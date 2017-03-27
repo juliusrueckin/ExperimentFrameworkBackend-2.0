@@ -22,5 +22,6 @@
 	{"x": "exp", "y": ["x"]}
     ],
     "url": "https://hooks.slack.com/services/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",
-    "verbose": 1
+    "csv": 1,
+    "mail": {"server": "localhost:25"}
 }
