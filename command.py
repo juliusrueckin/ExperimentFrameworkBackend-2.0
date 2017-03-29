@@ -16,9 +16,9 @@ class Command():
         env = config["env"] if "env" in config else ""
         timeout = float(config["timeout"]) if "timeout" in config else None
         error_regex = config["error"] if "error" in config else ".\A"
-        return cls(env,path, cmd, timeout, error_regex)
+        return cls(cmd, env, path, timeout, error_regex)
 
-    def __init__(self,env, path, cmd, timeout, error_regex):
+    def __init__(self, cmd, env="", path="", timeout=None, error_regex=".\A"):
         self.env = env
         self.cmd = cmd
         self.path = path

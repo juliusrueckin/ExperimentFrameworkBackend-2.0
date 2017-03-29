@@ -11,7 +11,7 @@ class Plotter():
         for key in param_names:
             self.results[key] = []
 
-    def start_experiment(self):
+    def start_experiment(self, command):
         pass
 
     def save_complete(self, par_alloc, result):

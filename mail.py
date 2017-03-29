@@ -17,26 +17,22 @@ class MailNotifier():
                 Mail.user = config["mail"]["user"]
             if "password" in config["mail"]:
                 Mail.password = config["mail"]["password"]
-            Mail.cmd = config["cmd"]
-            Mail.env = config["env"]
             return Mail
         else:
             return cls("", "")
 
-    def __init__(self, server="", user = "", password = "", cmd = "", env = ""):
+    def __init__(self, server="", user = "", password = ""):
         self.server = server
         self.user = user
         self.password = password
-        self.cmd = cmd
-        self.env = env
         self.completed = 0
         self.failed = 0
         self.message = ""
 
-    def start_experiment(self):
+    def start_experiment(self, command):
         """Record the start of the experiment in the mail body."""
         start_text = "Experiment {0} with variables {1} started\n"
-        self.message += start_text.format(self.cmd, self.env)
+        self.message += start_text.format(command.cmd, command.env)
 
     def save_complete(self, par_alloc, result):
         """Record the completion of one run in the mail body."""

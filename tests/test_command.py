@@ -16,7 +16,7 @@ class TestCommand(unittest.TestCase):
         self.p_command = Command.parse_command(config_path)
         
     def test_get_execute_command(self):
-        expected = "A=hello echo 1 && sleep"
+        expected = "A=test echo 1 && sleep"
         self.assertEqual(expected, self.command.get_execute_command(),
             msg="Error parsing command with env and cmd")
         expected = " cd ~ && python3 -c '1/0'"

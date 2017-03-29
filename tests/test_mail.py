@@ -3,6 +3,7 @@ import json
 
 from unittest.mock import Mock
 from mail import MailNotifier
+from command import Command
 
 class TestMail(unittest.TestCase):
 
@@ -15,17 +16,16 @@ class TestMail(unittest.TestCase):
         self.assertTrue(self.mail.server == "localhost:0" and self.mail.user == "Usermail" 
                         and self.mail.password == "***",
                         msg = "Error parsing mail configuration from .json file")
-        self.assertTrue(self.mail.cmd == "echo 1" and self.mail.env == "A=hello",
-                        msg = "Error parsing command information")
     
     def test_start_experiment(self):
-        self.mail.start_experiment()
-        expected = "Experiment echo 1 with variables A=hello started\n"
+        command = Command("echo 1", "A=test")
+        self.mail.start_experiment(command)
+        expected = "Experiment echo 1 with variables A=test started\n"
         self.assertEqual(expected, self.mail.message,
             msg = "Wrong text for start of experiment")
 
     def test_save_complete(self):
-        self.mail.save_complete("a=1")
+        self.mail.save_complete("a=1", {"number": 11.245, "value1": "example"})
         expected = "    Completed run for configuration a=1\n"
         self.assertEqual(expected, self.mail.message, msg = "Wrong text for completed run")
 

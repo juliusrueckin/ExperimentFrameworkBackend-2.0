@@ -1,5 +1,3 @@
 {
-    "mail": {"server": "localhost:0", "user": "Usermail", "password": "***"},
-    "env": "A=hello",
-    "cmd": "echo 1"
+    "mail": {"server": "localhost:0", "user": "Usermail", "password": "***"}
 }

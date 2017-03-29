@@ -3,37 +3,44 @@ import json
 import os
 
 from writer import CSVWriter
+from command import Command
 
 class TestParser(unittest.TestCase):
 
     def setUp(self):
-        self.writer = CSVWriter("tests/", "test", "A=hello", "echo 1", ["number", "value1"])
+        self.writer = CSVWriter("tests/", "test", ["number", "value1"])
+        self.command = Command("echo 1", "A=test")
 
     def tearDown(self):
         if os.path.isfile("tests/results.csv"):
             os.remove("tests/results.csv")
 
     def test_start_experiment(self):
-        self.writer.start_experiment()
+        self.writer.start_experiment(self.command)
+        self.writer.file.flush()
         self.writer.file.close()
         self.assertTrue(os.path.isfile("tests/results.csv"))
         self.compare_files("tests/header_expected.csv", "wrong csv header created")
 
     def test_save_complete(self):
-        self.writer.start_experiment()
+        self.writer.start_experiment(self.command)
         self.writer.save_complete("a=1", {"number": 11.245, "value1": "example"})
+        self.writer.file.flush()
         self.writer.file.close()
         self.compare_files("tests/save_completed.csv", "save complete failed")
 
     def test_save_fail(self):
-        self.writer.start_experiment()
+        self.writer.start_experiment(self.command)
         self.writer.save_fail("a=1","timeout")
+        self.writer.file.flush()
         self.writer.file.close()
         self.compare_files("tests/save_failed.csv", "save fail failed")
 
     def test_add_run_data(self):
+        self.writer.start_experiment(self.command)
+        self.writer.file.close()
         entry = {}
-        expected = {"cmd":"echo 1", "env": "A=hello", "name": "test", "timestamp": self.writer.time}
+        expected = {"cmd":"echo 1", "env": "A=test", "name": "test", "timestamp": self.writer.time}
         self.writer.add_run_data(entry)
         self.assertEqual(expected, entry, msg = "wrong metadata is added to entry")
 

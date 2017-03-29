@@ -4,19 +4,18 @@ import time
 
 class CSVWriter():
     """This class writes persists results of experiment runs into a csv file."""
-    def __init__(self,path, name, env, cmd, names):
+    def __init__(self,path, name, names):
         self.fields=["timestamp", "name", "env", "cmd", "param", "error"]
         for key in names:
             self.fields.append(key)
         self.time = round(time.time() * 1000)
         self.name = name
-        self.env = env
-        self.cmd = cmd
-        self.param = cmd
         self.path = path
     
-    def start_experiment(self):
+    def start_experiment(self, command):
         """Create results file and write header line."""
+        self.env = command.env
+        self.cmd = command.cmd
         self.file = open(self.path + "results.csv", "w", newline="")
         self.writer = csv.DictWriter(self.file, self.fields, restval=None)
         self.writer.writeheader()

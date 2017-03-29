@@ -7,24 +7,20 @@ class SlackNotifier():
     def parse_slack(cls, config):
         """Read the json configuration and create an instance of SlackNotifier from it"""
         webhook = config["url"] if "url" in config else ""
-        env = config["env"]
-        cmd = config["cmd"]
         verbose = True if "verbose" in config else False
-        return cls(webhook, env, cmd, verbose)
+        return cls(webhook, verbose)
 
-    def __init__(self, webhook, env, cmd, verbose):
+    def __init__(self, webhook, verbose):
         self.webhook = webhook
-        self.env = env
-        self.cmd = cmd
         self.verbose = verbose
         self.completed = 0
         self.failed = 0
 
-    def start_experiment(self):
+    def start_experiment(self, command):
         """Notify about the start of an experiment and define its environment and commands."""
         if self.webhook:
             data = '{{"text": "Experiment {0} with variables {1} started"}}'
-            self.send_message(data.format(self.cmd, self.env))
+            self.send_message(data.format(command.cmd, command.env))
     
     def finish_experiment(self):
         """Notify about the termination of an experiment, summarize complete and failed runs."""

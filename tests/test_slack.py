@@ -4,6 +4,7 @@ import json
 import httmock
 
 from slack import SlackNotifier
+from command import Command
 
 class TestSlack(unittest.TestCase):
 
@@ -14,7 +15,6 @@ class TestSlack(unittest.TestCase):
             config_verbose = json.load(file)
         self.slack = SlackNotifier.parse_slack(config)
         self.v_slack = SlackNotifier.parse_slack(config_verbose)
-
         self.expected_data = ""
 
     @httmock.all_requests
@@ -28,10 +28,9 @@ class TestSlack(unittest.TestCase):
     def fail_on_post(self,url,request):
         self.fail("Non verbose Slack should not send a message")
 
-
     def test_parse_slack(self):
-        self.assertTrue(self.v_slack.webhook and self.v_slack.env and self.v_slack.cmd and
-            self.v_slack.verbose, msg="Error parsing Slack from json")
+        self.assertTrue(self.v_slack.webhook and self.v_slack.verbose, 
+            msg="Error parsing Slack from json")
         self.assertFalse(self.slack.verbose, msg="Error for parsing verbose flag")
 
     def test_send_message(self):
@@ -39,9 +38,10 @@ class TestSlack(unittest.TestCase):
             self.slack.send_message('{"text":"test"}')
 
     def test_start_experiment(self):
-        self.expected_data = '{"text": "Experiment echo 1 with variables A=hello started"}'
+        command = Command("echo 1", env = "A=test")
+        self.expected_data = '{"text": "Experiment echo 1 with variables A=test started"}'
         with httmock.HTTMock(self.handle_post):
-            self.slack.start_experiment()
+            self.slack.start_experiment(command)
 
     def test_finish_experiment(self):
         self.expected_data = '{"text": "Experiment finished, 0 completed and 0 failed runs"}'
@@ -51,9 +51,9 @@ class TestSlack(unittest.TestCase):
     def test_save_complete(self):
         self.expected_data = '{"text": ":white_check_mark: for configuration a=1"}'
         with httmock.HTTMock(self.handle_post):
-            self.v_slack.save_complete("a=1")
+            self.v_slack.save_complete("a=1", {"number": 11.245, "value1": "example"})
         with httmock.HTTMock(self.fail_on_post):
-            self.slack.save_complete("a=1")
+            self.slack.save_complete("a=1", {"number": 11.245, "value1": "example"})
 
     def test_save_fail(self):
         self.expected_data = '{"text": ":x: Error timeout for run with configuration a=1"}'

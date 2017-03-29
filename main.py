@@ -35,7 +35,7 @@ class Experiment():
         if "mail" in config:
             self.observers.append(MailNotifier.parse_mail(config))
         if "csv" in config:
-            self.observers.append(CSVWriter(self.result_dir, self.name, self.command.env, self.command.cmd, self.parser.names()))
+            self.observers.append(CSVWriter(self.result_dir, self.name, self.parser.names()))
     
     def extract_parameters(self,params):
         param_names = [p["name"] for p in params]
@@ -45,7 +45,7 @@ class Experiment():
 
     def run_experiment(self):
         for ob in self.observers:
-            ob.start_experiment()
+            ob.start_experiment(self.command)
         with mp.Pool(3) as pool:
             res = [pool.apply_async(self.command.execute, (par,), callback=self.handle_result) for par in self.params.assignments]
             for r in res:
