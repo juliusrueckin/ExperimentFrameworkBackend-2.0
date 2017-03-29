@@ -4,13 +4,17 @@ import os
 import numpy as np
 
 from plotter import Plotter
+from command import Command
+from param import Parameters
 
 class TestPlotter(unittest.TestCase):
 
     def setUp(self):
         with open("tests/plotter_config.json","r") as file:
             config = json.load(file)
-        self.plotter = Plotter(config, ["x²","abs"],["a"],"tests/")
+        self.plotter = Plotter(config, ["x²","abs"],"tests/")
+        command = Command("", params=Parameters(["a"]))
+        self.plotter.start_experiment(command)
 
     def tearDown(self):
         if os.path.isfile("tests/a['x²'].pdf"):

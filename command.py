@@ -5,9 +5,14 @@ import signal
 import time
 import re
 
+from param import Parameters
+
 Execution = collections.namedtuple('Execution', ['params', 'timeout', 'error', 'exit_code', 'stdout', 'stderr'])
 
 class Command():
+    """This class stores the execution information (params, environment, path, cmd) and executes them.
+    It handles timeouts and errors when executing runs
+    """
     @classmethod
     def parse_command(cls, config):
         """Extract the configuration from the .json file."""
@@ -16,14 +21,16 @@ class Command():
         env = config["env"] if "env" in config else ""
         timeout = float(config["timeout"]) if "timeout" in config else None
         error_regex = config["error"] if "error" in config else ".\A"
-        return cls(cmd, env, path, timeout, error_regex)
+        params = Parameters.parse_params(config)
+        return cls(cmd, env, path, timeout, error_regex, params)
 
-    def __init__(self, cmd, env="", path="", timeout=None, error_regex=".\A"):
+    def __init__(self, cmd, env="", path="", timeout=None, error_regex=".\A", params = None):
         self.env = env
         self.cmd = cmd
         self.path = path
         self.timeout = timeout
         self.error_regex = error_regex
+        self.params = params
 
     def get_execute_command(self):
         """Assemble the command to execute from environment, path and cmd."""
@@ -54,5 +61,11 @@ class Command():
             os.killpg(os.getpgid(proc.pid),signal.SIGTERM)
             out, err = proc.communicate()
             return Execution(params, True, "timeout", 124, out.decode(), err.decode())
+
+    def get_parametrizations(self):
+        return self.params.parametrizations if self.params else []
+
+    def get_param_names(self):
+        return self.params.names if self.params else []
 
 
