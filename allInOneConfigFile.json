@@ -3,9 +3,11 @@
 	"path": "/home/julius/Dokumente/Uni/HPI/Jobs/GFZ/experiment_framework_prototype",
 	"cmd": "python bubble.py",
 	"title": "Bubble Sort Test Experiment",
+	"error": "^(.*?(?:error).*?)$",
 	"params": [
-		{"name": "minPts", "value" : ["1","2","3"]},
-		{"name": "epsilon", "value" : ["0.1","0.2","0.3"]}
+		{"name": "minPts", "value" : ["2","3"]},
+		{"name": "epsilon", "value" : ["0.1","0.2"]},
+		{"name": "dataset", "value": ["dataset1.csv", "dataset2.csv"]}
 	],
 
 	"csv":{
@@ -30,7 +32,7 @@
     "telegram": {
 	    "token" : "350553078:AAEu70JDqMFcG_x5eBD3nqccTvc4aFNMKkg",
 		"chat_id" : "126551968",
-		"verbose": 0
+		"verbose": 1
 	},
 
 	"defaultTimeout": 1000,

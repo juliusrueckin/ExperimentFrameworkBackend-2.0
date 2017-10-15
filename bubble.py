@@ -15,6 +15,7 @@ def bubble(inputArray):
 	for i in range(0, len(inputArray)):
 		for j in range(0, len(inputArray)-1):
 			if (i*len(inputArray))%((len(inputArray)**2)*0.1) == 0 and i != 0 and j == 0:
+				print("This is my error message")
 				print("Algorithm still working fine")
 				x += 1
 
@@ -41,6 +42,6 @@ def bubble(inputArray):
 
 if __name__ == "__main__":
 
-	inputArray = random.sample(range(10000), 10)
+	inputArray = random.sample(range(10000), 1000)
 	bubble(inputArray)
 	print("Finished Bubblesort")

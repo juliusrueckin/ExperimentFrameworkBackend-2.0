@@ -63,15 +63,17 @@ class Experiment():
             out.write(execution.stdout)
         with open(self.result_dir + str(par) + "stderr", "w+") as err:
             err.write(execution.stderr)
-        if execution.exit_code:
+        if execution.exit_code == 0:
             for ob in self.observers:
                 ob.save_fail(par_alloc, execution.error)
         else:
+            print("Errors not found")
             result = self.parser.parse(execution.stdout)
             for ob in self.observers:
                 ob.save_complete(par_alloc, result)        
 
-cfgfile = sys.argv[1]
-config = json.load(open(cfgfile,"r"))
-exp = Experiment(config)
-exp.run_experiment()
+if __name__ == "__main__":
+    cfgfile = sys.argv[1]
+    config = json.load(open(cfgfile,"r"))
+    exp = Experiment(config)
+    exp.run_experiment()
