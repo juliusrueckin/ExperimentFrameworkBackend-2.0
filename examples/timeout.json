@@ -1,6 +1,6 @@
 {
     "env": "",
-    "path": "/home/lukas/work/experiments/examples",
+    "path": "/home/julius/Dokumente/Uni/HPI/Jobs/GFZ/Forschungsprojekt/experiment_framework/examples",
     "cmd": "python3 timeout.py",
     "timeout": "5",
     "error": "^(.*?(?:(?:error)|(?:exception)).*?)$",

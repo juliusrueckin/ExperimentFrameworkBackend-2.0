@@ -1,7 +1,7 @@
 {
     "name": "name test",
     "env": "",
-    "path": "/home/lukas/work/experiments/examples",
+    "path": "/home/julius/Dokumente/Uni/HPI/Jobs/GFZ/Forschungsprojekt/experiment_framework/examples",
     "cmd": "python3 output.py",
 
     "params": [

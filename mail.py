@@ -1,5 +1,8 @@
 import smtplib
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+from email.utils import COMMASPACE, formatdate
 
 class MailNotifier():
     """Collect data about the experiment and its runs and send them via email after termination.
@@ -8,23 +11,26 @@ class MailNotifier():
     and failed runs at the end.
     """
     @classmethod
-    def parse_mail(cls, config):
+    def parse_mail(cls, config, results_path, name):
         """Parse config file and create an MailNotifier instance."""
         if "mail" in config:
             server= config["mail"]["server"]
-            Mail = cls(server=server)
+            Mail = cls(server=server, results_path=results_path, name=name)
             if "user" in config["mail"]:
                 Mail.user = config["mail"]["user"]
             if "password" in config["mail"]:
                 Mail.password = config["mail"]["password"]
             return Mail
         else:
-            return cls("", "")
+            return cls("", "", "", "")
 
-    def __init__(self, server="", user = "", password = ""):
+    def __init__(self, server="", user = "", password = "", results_path="", name=""):
         self.server = server
         self.user = user
         self.password = password
+        self.results_path = results_path
+        self.name = name
+
         self.completed = 0
         self.failed = 0
         self.message = ""
@@ -54,21 +60,29 @@ class MailNotifier():
             self.send_mail()
             
     def send_mail(self):
-        """Connect to the configured mailserver and send the mail."""
-        s = None
+        """Connect to the configured mailserver and send mail with attached result file."""
+        smtp = None
         if self.user:
-            s = smtplib.SMTP_SSL(self.server)
-            s.ehlo()
-            s.login(self.user, self.password)
+            smtp = smtplib.SMTP_SSL(self.server)
+            smtp.ehlo()
+            smtp.login(self.user, self.password)
         else:
-            s = smtplib.SMTP(self.server)
-            s.ehlo()
+            smtp = smtplib.SMTP(self.server)
+            smtp.ehlo()
             self.user="Test@example.org"
-        content = MIMEText(self.message)
-        content["Subject"] = "Experiment results"
-        content["From"] = self.user
-        content["To"] = self.user
-        s.send_message(content)
-        s.close()
 
-    
+        msg = MIMEMultipart()
+        msg['From'] = self.user
+        msg['To'] = COMMASPACE.join(self.user)
+        msg['Date'] = formatdate(localtime=True)
+        msg['Subject'] = self.name + " - Results"
+
+        msg.attach(MIMEText(self.message))
+        
+        with open(self.results_path, "rb") as result_file:
+            result_attachment = MIMEApplication(result_file.read(),Name=self.name+'results.csv')
+            result_attachment['Content-Disposition'] = 'attachment; filename="%s"' % (self.name+'results.csv')
+            msg.attach(result_attachment)
+
+        smtp.sendmail(self.user, self.user, msg.as_string())
+        smtp.close()

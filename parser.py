@@ -9,7 +9,7 @@ class Parser():
     @classmethod
     def parse_outputs(cls,config):
         """Create the parser object from its json specification"""
-        desc = config["outputs"] if "outputs" in config else []
+        desc = config["csv"]["outputs"] if config["csv"]["outputs"] is not None else []
         outputs = [Output(o["name"],o["pattern"],o["group"]) for o in desc]
         return cls(outputs)
 
@@ -30,6 +30,3 @@ class Parser():
     def names(self):
         """Return a list of all names of output variables"""
         return [o.name for o in self.outputs]
-            
-        
-

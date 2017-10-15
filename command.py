@@ -10,7 +10,7 @@ from param import Parameters
 Execution = collections.namedtuple('Execution', ['params', 'timeout', 'error', 'exit_code', 'stdout', 'stderr'])
 
 class Command():
-    """This class stores the execution information (params, environment, path, cmd) and executes them.
+    """This class stores thereatc execution information (params, environment, path, cmd) and executes them.
     It handles timeouts and errors when executing runs
     """
     @classmethod

@@ -2,7 +2,7 @@
     "name": "name test",
     "env": "",
     "cores" : 2,
-    "path": "/home/lukas/work/experiments/examples",
+    "path": "/home/julius/Dokumente/Uni/HPI/Jobs/GFZ/Forschungsprojekt/experiment_framework/examples",
     "cmd": "python3 plot.py",
     "error": "^(.*?(?:(?:error)|(?:exception)).*?)$",
 
@@ -17,9 +17,9 @@
     ],
     "plots": [
         {"x": "x", "y": ["x²","x³"]},
-	{"x": "x", "y": ["x²","abs"], "format": ["r--", "yo"]},
-	{"x": "x²", "y": ["x³"]},
-	{"x": "exp", "y": ["x"]}
+    	{"x": "x", "y": ["x²","abs"], "format": ["r--", "yo"]},
+    	{"x": "x²", "y": ["x³"]},
+    	{"x": "exp", "y": ["x"]}
     ],
     "url": "https://hooks.slack.com/services/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",
     "csv": 1,

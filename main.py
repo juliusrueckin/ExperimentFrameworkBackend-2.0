@@ -13,28 +13,38 @@ from writer import CSVWriter
 from plotter import Plotter
 from slack import SlackNotifier
 from mail import MailNotifier
+from utilization_bot import UtilizationBot
+from telegram_bot import TelegramNotifier
 
 Parameters = collections.namedtuple('Parameters', ['names', 'assignments'])
 
 class Experiment():
 
     def __init__(self, config):
-        self.name = config["name"] if "name" in config else ""
+        self.name = config["title"] if "title" in config else ""
         self.cores = int(config["cores"]) if "cores" in config else 1
         self.command = Command.parse_command(config)
         self.result_dir = "results/" + str(round(time.time()*1000)) + "/"
         os.makedirs(self.result_dir)
         self.parser = Parser.parse_outputs(config)
         self.observers = []
+
+        #add telegram utilization bot
+        if "telegram" in config:
+            self.utilizationBot = UtilizationBot.parse_utilization_bot(config, os.getpid())
+
+        #add observers
         if "plots" in config:
             self.observers.append(Plotter(config,self.parser.names(), self.result_dir))
-        if "url" in config:
+        if "slack" in config:
             self.observers.append(SlackNotifier.parse_slack(config))
-        if "mail" in config:
-            self.observers.append(MailNotifier.parse_mail(config))
         if "csv" in config:
             self.observers.append(CSVWriter(self.result_dir, self.name, self.parser.names()))
-
+        if "mail" in config:
+            self.observers.append(MailNotifier.parse_mail(config, self.result_dir + "results.csv", self.name))
+        if "telegram" in config:
+            self.observers.append(TelegramNotifier.parse_telegram(config))
+        
     def run_experiment(self):
         for ob in self.observers:
             ob.start_experiment(self.command)
