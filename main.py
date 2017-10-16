@@ -67,7 +67,6 @@ class Experiment():
             for ob in self.observers:
                 ob.save_fail(par_alloc, execution.error)
         else:
-            print("Errors not found")
             result = self.parser.parse(execution.stdout)
             for ob in self.observers:
                 ob.save_complete(par_alloc, result)        

@@ -56,8 +56,10 @@ class Command():
             out, err = proc.communicate(timeout=self.timeout)
             errors = re.findall(self.error_regex, out.decode(), flags=re.I|re.M)
             error = '\n'.join(errors) if errors else ""
-            #return Execution(params, False, error, proc.return, out.decode(), err.decode())
-            return Execution(params, False, error, 0, out.decode(), err.decode())
+            if errors:
+                return Execution(params, False, error, 0, out.decode(), err.decode())
+            else:
+                return Execution(params, False, error, 1, out.decode(), err.decode())
         except subprocess.TimeoutExpired:
             os.killpg(os.getpgid(proc.pid),signal.SIGTERM)
             out, err = proc.communicate()
