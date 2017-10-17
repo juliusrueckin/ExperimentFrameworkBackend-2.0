@@ -11,7 +11,7 @@ class TelegramNotifier():
         if "telegram" in config:
             token = config["telegram"]["token"]
             chat_id = config["telegram"]["chat_id"]
-            verbose = config["telegram"]["verbose"]
+            verbose = True if config["telegram"]["verbose"] else False
             bot = Bot(token)
             Telegram = cls(token, chat_id, bot, verbose)
             return Telegram

@@ -4,9 +4,10 @@
 	"cmd": "python bubble.py",
 	"title": "Bubble Sort Test Experiment",
 	"error": "^(.*?(?:error).*?)$",
+	"serialize_runs": 1,
 	"params": [
-		{"name": "minPts", "value" : ["2","3"]},
-		{"name": "epsilon", "value" : ["0.1","0.2"]},
+		{"name": "minPts", "value" : ["2"]},
+		{"name": "epsilon", "value" : ["0.1"]},
 		{"name": "dataset", "value": ["dataset1.csv", "dataset2.csv"]}
 	],
 

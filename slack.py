@@ -8,7 +8,7 @@ class SlackNotifier():
         """Read the json configuration and create an instance of SlackNotifier from it"""
         if "slack" in config:
             webhook = config["slack"]["webhook_url"]
-            verbose = config["slack"]["verbose"]
+            verbose = True if config["slack"]["verbose"] else False
             icon = config["slack"]["icon"]
             bot_name = config["slack"]["bot_name"]
             return cls(webhook, verbose, icon, bot_name)

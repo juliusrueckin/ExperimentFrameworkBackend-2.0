@@ -23,6 +23,7 @@ class Experiment():
     def __init__(self, config):
         self.name = config["title"] if "title" in config else ""
         self.cores = int(config["cores"]) if "cores" in config else 1
+        self.serialize_runs = True if "serialize_runs" in config else False
         self.command = Command.parse_command(config)
         self.result_dir = "results/" + str(round(time.time()*1000)) + "/"
         os.makedirs(self.result_dir)
@@ -44,11 +45,17 @@ class Experiment():
             self.observers.append(MailNotifier.parse_mail(config, self.result_dir + "results.csv", self.name))
         if "telegram" in config:
             self.observers.append(TelegramNotifier.parse_telegram(config))
-        
+    
+    def set_amount_of_parallel_process(self):
+        if self.serialize_runs:
+            return 1
+        else:
+            return 3
+
     def run_experiment(self):
         for ob in self.observers:
             ob.start_experiment(self.command)
-        with mp.Pool(3) as pool:
+        with mp.Pool(self.set_amount_of_parallel_process()) as pool:
             res = [pool.apply_async(self.command.execute, (par,), callback=self.handle_result) 
                 for par in self.command.get_parametrizations()]
             for r in res:
