@@ -16,9 +16,8 @@ from queue import Queue, Empty
 proc = subprocess.Popen("python -u bubble.py", stdin= subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, preexec_fn=os.setsid, universal_newlines=True)
 
 # Poll process for new output until finished
-while True:
+while proc.poll() is None:
 	nextline = proc.stdout.readline()
 	if nextline == '' and proc.poll() is not None:
 		break
 	sys.stdout.write("Processed stdout: " + nextline)
-	sys.stdout.flush()

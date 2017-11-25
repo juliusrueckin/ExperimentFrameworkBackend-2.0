@@ -15,7 +15,6 @@ def bubble(inputArray):
 	for i in range(0, len(inputArray)):
 		for j in range(0, len(inputArray)-1):
 			if (i*len(inputArray))%((len(inputArray)**2)*0.1) == 0 and i != 0 and j == 0:
-				#print("This is my error message")
 				print("Algorithm still working fine")
 				x += 1
 
@@ -24,14 +23,14 @@ def bubble(inputArray):
 					errorImprovement = errorImprovement - 1
 					if errorImprovement < 0:
 						errorImprovement = 0
-					print("Loss function: " + str(error))
+					print("Loss function " + str(error))
 
 				if accuracyFunctionTest:
 					accuracy = accuracy + accuracyImprovement
 					accuracyImprovement = accuracyImprovement - 1
 					if accuracyImprovement < 0:
 						accuracyImprovement = 0
-					print("Accuracy function: " + str(accuracy))
+					print("Accuracy function " + str(accuracy))
 
 			if inputArray[j] > inputArray[j+1]:
 				tmp = inputArray[j+1]
@@ -42,6 +41,6 @@ def bubble(inputArray):
 
 if __name__ == "__main__":
 
-	inputArray = random.sample(range(10000), 1000)
+	inputArray = random.sample(range(10000), 2000)
 	bubble(inputArray)
 	print("Finished Bubblesort")

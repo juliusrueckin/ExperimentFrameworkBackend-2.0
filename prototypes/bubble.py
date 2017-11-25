@@ -42,6 +42,6 @@ def bubble(inputArray):
 
 if __name__ == "__main__":
 
-	inputArray = random.sample(range(30000), 3000)
+	inputArray = random.sample(range(30000), 5000)
 	bubble(inputArray)
 	print("Finished Bubblesort")

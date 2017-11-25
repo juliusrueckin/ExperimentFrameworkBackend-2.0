@@ -1,0 +1,48 @@
+{
+	"env": "",
+	"path": "/home/julius/Dokumente/Uni/HPI/Jobs/GFZ/experiment_framework_prototype",
+	"cmd": "python -u bubble.py",
+	"title": "Bubble Sort Test Experiment",
+	"serialize_runs": 1,
+	"params": [
+		{"name": "minPts", "value" : ["2"]},
+		{"name": "epsilon", "value" : ["0.1"]},
+		{"name": "dataset", "value": ["dataset1.csv", "dataset2.csv"]}
+	],
+
+	"csv":{
+		"outputs": [
+	        {"name": "aNumber", "pattern": "(-?\\d+(\\.\\d+)?)", "group": 1}
+	    ]
+	},
+
+	"mail": {
+		"server": "smtp.gmail.com",
+		"user": "experiment.framwork@gmail.com",
+		"password": "expFramework2017"
+	},
+
+	"slack":{
+		"webhook_url": "https://hooks.slack.com/services/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",
+		"icon": ":golf:",
+	    "bot_name": "experiment-framework-bot",
+	    "verbose": 0
+	},
+
+    "telegram": {
+	    "token" : "350553078:AAEu70JDqMFcG_x5eBD3nqccTvc4aFNMKkg",
+		"chat_id" : "126551968",
+		"verbose": 1
+	},
+	
+	"defaultTimeout": 1000,
+	"errorPattern": "^(.*?(?:error).*?)$",
+	"statusPattern": "^(.*?(?:Algorithm still working fine).*?)$",
+	"maxTimeSinceLastStatusMsg": 200,
+	"lossPattern": "^(.*?(?:Loss function).*?)$",
+	"minLossFunctionImprovementSinceLastIteration": 10,
+	"lossValuePattern": "(-?\\d+(\\.\\d+)?)",
+	"accuracyPattern": "^(.*?(?:Accuracy function).*?)$",
+	"minAccuracyFunctionImprovementSinceLastIteration": 10,
+	"accuracyValuePattern": "(-?\\d+(\\.\\d+)?)"
+}

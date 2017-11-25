@@ -19,17 +19,61 @@ class Command():
         cmd = config["cmd"]
         path = config["path"] if "path" in config else ""
         env = config["env"] if "env" in config else ""
-        timeout = float(config["timeout"]) if "timeout" in config else None
-        error_regex = config["error"] if "error" in config else ".\A"
-        params = Parameters.parse_params(config)
-        return cls(cmd, env, path, timeout, error_regex, params)
+        timeout = float(config["defaultTimeout"]) if "defaultTimeout" in config else None
 
-    def __init__(self, cmd, env="", path="", timeout=None, error_regex=".\A", params = None):
+        error_regex=status_regex=accuracy_regex=accuracy_value_regex=loss_regex=loss_value_regex=".\A"
+        min_accuracy_improvement=min_loss_improvement=999999999.9
+        if "stdoutParsing" in config:
+            configStdoutParsing = config["stdoutParsing"]
+
+            if "errorPattern" in configStdoutParsing:
+                error_regex = configStdoutParsing["errorPattern"]
+
+            if "statusPattern" in configStdoutParsing:
+                status_regex = configStdoutParsing["statusPattern"] 
+                if "maxTimeSinceLastStatusMsg" in configStdoutParsing:
+                    max_time_since_last_status_msg = float(configStdoutParsing["maxTimeSinceLastStatusMsg"])
+                else:
+                    raise ValueError("Define max. time since last status message!")
+
+            if "accuracyPattern" in configStdoutParsing:
+                accuracy_regex = configStdoutParsing["accuracyPattern"]
+                if "minAccuracyFunctionImprovementSinceLastIteration" in configStdoutParsing:
+                    min_accuracy_improvement = float(configStdoutParsing["minAccuracyFunctionImprovementSinceLastIteration"])
+                else:
+                    raise ValueError("Define min. accuracy imporvement since last iteration")
+                if "accuracyValuePattern" in configStdoutParsing:
+                    accuracy_value_regex = configStdoutParsing["accuracyValuePattern"]
+                else:
+                    raise ValueError("Define accuracy function value regex!")
+
+            if "lossPattern" in configStdoutParsing:
+                loss_regex = configStdoutParsing["lossPattern"]
+                if "minLossFunctionImprovementSinceLastIteration" in configStdoutParsing:
+                    min_loss_improvement = float(configStdoutParsing["minLossFunctionImprovementSinceLastIteration"])
+                else:
+                    raise ValueError("Define min. loss imporvement since last iteration")
+                if "lossValuePattern" in configStdoutParsing:
+                    loss_value_regex = configStdoutParsing["lossValuePattern"]
+                else:
+                    raise ValueError("Define loss function value regex!")
+
+        params = Parameters.parse_params(config)
+        return cls(cmd, env, path, timeout, error_regex, status_regex, accuracy_regex, accuracy_value_regex, loss_regex, loss_value_regex, min_accuracy_improvement, min_loss_improvement, params)
+
+    def __init__(self, cmd, env="", path="", timeout=None, error_regex=".\A", status_regex=".\A", accuracy_regex=".\A", accuracy_value_regex=".\A", loss_regex=".\A", loss_value_regex=".\A", min_accuracy_improvement=999999999.9, min_loss_improvement=999999999.9, params = None):
         self.env = env
         self.cmd = cmd
         self.path = path
         self.timeout = timeout
         self.error_regex = error_regex
+        self.status_regex = status_regex
+        self.accuracy_regex = accuracy_regex
+        self.accuracy_value_regex = accuracy_value_regex
+        self.loss_regex = loss_regex
+        self.loss_value_regex = loss_value_regex
+        self.min_accuracy_improvement = min_accuracy_improvement
+        self.min_loss_improvement = min_loss_improvement
         self.params = params
 
     def get_execute_command(self):
@@ -51,7 +95,17 @@ class Command():
         set the timeout flag to True
         """
         cmd_par = self.get_execute_command() + " " + " ".join(params)
-        proc = subprocess.Popen(cmd_par,stdout=subprocess.PIPE, stderr = subprocess.PIPE, shell=True, preexec_fn=os.setsid)
+        proc = subprocess.Popen(cmd_par, stdin= subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True, preexec_fn=os.setsid, universal_newlines=True)
+        
+        """ Poll process for new output until finished
+        Search for various output patterns: error, status, loss, accuracy
+        """
+        while True:
+            next_line = proc.stdout.readline()
+            if proc.poll() is not None and next_line == "":
+                break
+            print("Processed stdout: " + next_line)
+
         try:
             out, err = proc.communicate(timeout=self.timeout)
             errors = re.findall(self.error_regex, out.decode(), flags=re.I|re.M)
@@ -70,5 +124,3 @@ class Command():
 
     def get_param_names(self):
         return self.params.names if self.params else []
-
-
