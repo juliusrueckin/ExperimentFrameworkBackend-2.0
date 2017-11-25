@@ -26,7 +26,7 @@ class Command():
         required additional information are given. Otherwise raise an exception to
         prevent calculation errors in stdout parsing logic later on.
         """
-        error_regex=status_regex=accuracy_regex=accuracy_value_regex=loss_regex=loss_value_regex=progress_regex=progress_value_regex".\A"
+        error_regex=status_regex=accuracy_regex=accuracy_value_regex=loss_regex=loss_value_regex=progress_regex=progress_value_regex=".\A"
         min_accuracy_improvement=min_loss_improvement=max_time_since_last_status_msg=999999999.9
         if "stdoutParsing" in config:
             configStdoutParsing = config["stdoutParsing"]
@@ -73,7 +73,7 @@ class Command():
         params = Parameters.parse_params(config)
         return cls(cmd, env, path, timeout, error_regex, status_regex, max_time_since_last_status_msg, accuracy_regex, accuracy_value_regex, loss_regex, loss_value_regex, min_accuracy_improvement, min_loss_improvement, progress_regex, progress_value_regex, params)
 
-    def __init__(self, cmd, env="", path="", timeout=None, error_regex=".\A", status_regex=".\A", , max_time_since_last_status_msg=999999999.9, accuracy_regex=".\A", accuracy_value_regex=".\A", loss_regex=".\A", loss_value_regex=".\A", min_accuracy_improvement=999999999.9, min_loss_improvement=999999999.9, progress_regex=".\A", progress_value_regex=".\A", params = None):
+    def __init__(self, cmd, env="", path="", timeout=None, error_regex=".\A", status_regex=".\A", max_time_since_last_status_msg=999999999.9, accuracy_regex=".\A", accuracy_value_regex=".\A", loss_regex=".\A", loss_value_regex=".\A", min_accuracy_improvement=999999999.9, min_loss_improvement=999999999.9, progress_regex=".\A", progress_value_regex=".\A", params = None):
         self.env = env
         self.cmd = cmd
         self.path = path
@@ -92,6 +92,8 @@ class Command():
         self.params = params
 
         self.last_status_occured = time.time()
+        self.last_accuracy = 0
+        self.last_loss = 9999999
 
     def get_execute_command(self):
         """Assemble the command to execute from environment, path and cmd."""
@@ -129,7 +131,9 @@ class Command():
         occured_accuracy_patterns = re.findall(self.accuracy_regex, next_output, flags=re.I|re.M)
         if len(occured_accuracy_patterns) > 0:
             accuracy_pattern_content = occured_accuracy_patterns[-1]
-            accuracy_improvement = re.findall(self.accuracy_value_regex, accuracy_pattern_content, flags=re.I|re.M)[0]
+            current_accuracy = re.findall(self.accuracy_value_regex, accuracy_pattern_content, flags=re.I|re.M)[0]
+            accuracy_improvement = float(current_accuracy) - self.last_accuracy
+            self.last_accuracy = current_accuracy
             if accuracy_improvement < self.min_accuracy_improvement:
                 #proc.kill()
                 raise ValueError("Min. accuracy improvement not reached!")
@@ -141,7 +145,9 @@ class Command():
         occured_loss_patterns = re.findall(self.loss_regex, next_output, flags=re.I|re.M)
         if len(occured_loss_patterns) > 0:
             loss_pattern_content = occured_loss_patterns[-1]
-            loss_improvement = re.findall(self.loss_value_regex, loss_pattern_content, flags=re.I|re.M)[-1]
+            current_loss = re.findall(self.loss_value_regex, loss_pattern_content, flags=re.I|re.M)[-1]
+            loss_improvement = self.last_loss - float(current_loss)
+            self.last_loss = current_loss
             if loss_improvement < self.min_loss_improvement:
                 #proc.kill()
                 raise ValueError("Min. loss improvement not reached!")
