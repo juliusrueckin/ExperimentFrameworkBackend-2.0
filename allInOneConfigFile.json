@@ -27,6 +27,8 @@
 		"lossValuePattern": "(-?\\d+(\\.\\d+)?)",
 		"accuracyPattern": "^(.*?(?:Accuracy function).*?)$",
 		"minAccuracyFunctionImprovementSinceLastIteration": 10,
-		"accuracyValuePattern": "(-?\\d+(\\.\\d+)?)"
+		"accuracyValuePattern": "(-?\\d+(\\.\\d+)?)",
+		"progressPattern": "^(.*?(?:Progress).*?)$",
+		"progressValuePattern": "(-?\\d+(\\.\\d+)?)"
 	}
 }

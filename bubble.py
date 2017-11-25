@@ -4,26 +4,31 @@ import sys
 def bubble(inputArray):
 	x = 1
 
-	error = 100
-	errorImprovement = 9
-	errorFunctionTest = False
+	loss = 100
+	lossImprovement = 9
+	lossFunctionTest = False
 
 	accuracy = 0
 	accuracyImprovement = 9
 	accuracyFunctionTest = True
 
+	progress = 0
+
 	for i in range(0, len(inputArray)):
 		for j in range(0, len(inputArray)-1):
 			if (i*len(inputArray))%((len(inputArray)**2)*0.1) == 0 and i != 0 and j == 0:
 				print("Algorithm still working fine")
+				#print("This is an error which occured")
+				progress += 10
+				print("Progress: " + str(progress) + " %")
 				x += 1
 
-				if errorFunctionTest:
-					error = error - errorImprovement
-					errorImprovement = errorImprovement - 1
-					if errorImprovement < 0:
-						errorImprovement = 0
-					print("Loss function " + str(error))
+				if lossFunctionTest:
+					loss = loss - lossImprovement
+					lossImprovement = lossImprovement - 1
+					if lossImprovement < 0:
+						lossImprovement = 0
+					print("Loss function " + str(loss))
 
 				if accuracyFunctionTest:
 					accuracy = accuracy + accuracyImprovement
