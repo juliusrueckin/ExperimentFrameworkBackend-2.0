@@ -5,11 +5,11 @@ def bubble(inputArray):
 	x = 1
 
 	loss = 100
-	lossImprovement = 9
-	lossFunctionTest = False
+	lossImprovement = 25
+	lossFunctionTest = True
 
 	accuracy = 0
-	accuracyImprovement = 9
+	accuracyImprovement = 25
 	accuracyFunctionTest = True
 
 	progress = 0
@@ -18,9 +18,9 @@ def bubble(inputArray):
 		for j in range(0, len(inputArray)-1):
 			if (i*len(inputArray))%((len(inputArray)**2)*0.1) == 0 and i != 0 and j == 0:
 				print("Algorithm still working fine")
-				#print("This is an error which occured")
+				#print("This is an error message")
 				progress += 10
-				print("Progress: " + str(progress) + " %")
+				print("Progress Information " + str(progress) + " %")
 				x += 1
 
 				if lossFunctionTest:
@@ -46,6 +46,6 @@ def bubble(inputArray):
 
 if __name__ == "__main__":
 
-	inputArray = random.sample(range(10000), 2000)
+	inputArray = random.sample(range(10000), 8000)
 	bubble(inputArray)
 	print("Finished Bubblesort")

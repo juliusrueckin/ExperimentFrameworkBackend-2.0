@@ -63,7 +63,7 @@ class Command():
                 else:
                     raise ValueError("Define loss function value regex!")
 
-            if "progressPattern" in config:
+            if "progressPattern" in configStdoutParsing:
                 progress_regex = configStdoutParsing["progressPattern"]
                 if "progressValuePattern" in configStdoutParsing:
                     progress_value_regex = configStdoutParsing["progressValuePattern"]
@@ -92,8 +92,8 @@ class Command():
         self.params = params
 
         self.last_status_occured = time.time()
-        self.last_accuracy = 0
-        self.last_loss = 9999999
+        self.last_accuracy = 0.0
+        self.last_loss = 9999999.9
 
     def get_execute_command(self):
         """Assemble the command to execute from environment, path and cmd."""
@@ -110,9 +110,9 @@ class Command():
         """
         occured_errors = re.findall(self.error_regex, next_output, flags=re.I|re.M)
         if len(occured_errors) > 0:
-            #proc.kill()
-            raise ValueError("Error pattern occured!")
-
+            os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+            #raise ValueError("Error pattern occured!")
+        
         """
         If status pattern occured and max. time since last status pattern exceeded,
         kill algirthm's process.
@@ -120,9 +120,10 @@ class Command():
         occured_stats = re.findall(self.status_regex, next_output, flags=re.I|re.M)
         if len(occured_stats) > 0:
             if time.time() - self.last_status_occured > self.max_time_since_last_status_msg:
-                #proc.kill()
-                raise ValueError("Max. time since last status message exceeded!")
-            else: self.last_status_occured = time.time()
+                os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+                #raise ValueError("Max. time since last status message exceeded!")
+            else: 
+                self.last_status_occured = time.time()
 
         """
         If accuracy pattern occured and accuracy function did not improve enough,
@@ -131,12 +132,13 @@ class Command():
         occured_accuracy_patterns = re.findall(self.accuracy_regex, next_output, flags=re.I|re.M)
         if len(occured_accuracy_patterns) > 0:
             accuracy_pattern_content = occured_accuracy_patterns[-1]
-            current_accuracy = re.findall(self.accuracy_value_regex, accuracy_pattern_content, flags=re.I|re.M)[0]
-            accuracy_improvement = float(current_accuracy) - self.last_accuracy
-            self.last_accuracy = current_accuracy
+            current_accuracy = float(re.findall(self.accuracy_value_regex, accuracy_pattern_content, flags=re.I|re.M)[-1])
+            accuracy_improvement = current_accuracy - self.last_accuracy
             if accuracy_improvement < self.min_accuracy_improvement:
-                #proc.kill()
-                raise ValueError("Min. accuracy improvement not reached!")
+                os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+                #raise ValueError("Min. accuracy improvement not reached!")
+            else:
+                self.last_accuracy = current_accuracy
 
         """
         If loss pattern occured and loss function did not improve enough,
@@ -145,12 +147,13 @@ class Command():
         occured_loss_patterns = re.findall(self.loss_regex, next_output, flags=re.I|re.M)
         if len(occured_loss_patterns) > 0:
             loss_pattern_content = occured_loss_patterns[-1]
-            current_loss = re.findall(self.loss_value_regex, loss_pattern_content, flags=re.I|re.M)[-1]
+            current_loss = float(re.findall(self.loss_value_regex, loss_pattern_content, flags=re.I|re.M)[-1])
             loss_improvement = self.last_loss - float(current_loss)
-            self.last_loss = current_loss
             if loss_improvement < self.min_loss_improvement:
-                #proc.kill()
-                raise ValueError("Min. loss improvement not reached!")
+                os.killpg(os.getpgid(proc.pid), signal.SIGTERM)
+                #raise ValueError("Min. loss improvement not reached!")
+            else:
+                self.last_loss = current_loss
 
         """
         If progress pattern occured, process progress value and send it to rails api in
@@ -159,8 +162,8 @@ class Command():
         occured_progess_patterns = re.findall(self.progress_regex, next_output, flags=re.I|re.M)
         if len(occured_progess_patterns) > 0:
             progress_pattern_content = occured_progess_patterns[-1]
-            progress_value = re.findall(self.progress_value_regex, progress_pattern_content, flags=re.I|re.M)[-1]
-            print("Processed new progress: " + str(progress_value) + "%")
+            progress_value = float(re.findall(self.progress_value_regex, progress_pattern_content, flags=re.I|re.M)[-1])
+            print("Processed new progress: " + str(progress_value) + "% \n")
 
     def execute(self, params):
         """Execute the command parametrized by the given parameters
