@@ -19,7 +19,7 @@ RUN apt-get install -y curl grep sed dpkg && \
     apt-get clean
 
 RUN apt-get --assume-yes install python3-pip 
-RUN pip3 install -r requirements.txt
+RUN pip install -r requirements.txt
 RUN make clean
 
 ENV PATH /opt/conda/bin:$PATH
