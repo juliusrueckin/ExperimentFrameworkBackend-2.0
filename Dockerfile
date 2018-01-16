@@ -34,15 +34,15 @@ RUN git clone https://github.com/juliusrueckin/ExperimentFrameworkBackend-2.0.gi
 # install pip
 RUN apt-get --assume-yes install python3-pip 
 
-# install dependencies
-RUN pip3 install -r requirements.txt
-
-# install python telegram bot
+# install python telegram bot dependency
 RUN git clone https://github.com/python-telegram-bot/python-telegram-bot --recursive 
 RUN cd python-telegram-bot
 RUN python setup.py install
 RUN cd ..
 RUN rm -rf python-telegram-bot
+
+# install dependencies
+RUN pip3 install -r requirements.txt
 
 # clean up installations
 RUN make clean
