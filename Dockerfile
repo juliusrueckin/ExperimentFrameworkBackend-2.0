@@ -18,10 +18,17 @@ RUN apt-get install -y curl grep sed dpkg && \
     rm tini.deb && \
     apt-get clean
 
+RUN apt-get --assume-yes install python3-pip 
+RUN pip3 install -r requirements.txt
+RUN make clean
+
 ENV PATH /opt/conda/bin:$PATH
 ENV APP /usr/src/app
 
 RUN mkdir -p $APP
+RUN cd $APP
 WORKDIR $APP
 
-COPY . $APP
+RUN git clone https://github.com/juliusrueckin/ExperimentFrameworkBackend-2.0.git .
+
+EXPOSE 8080
