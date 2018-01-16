@@ -19,6 +19,18 @@ RUN apt-get install -y curl grep sed dpkg && \
     rm tini.deb && \
     apt-get clean
 
+# set environment variables for conda and python app
+ENV PATH /opt/conda/bin:$PATH
+ENV APP /usr/src/app
+
+# create and change to working directory
+RUN mkdir -p $APP
+RUN cd $APP
+WORKDIR $APP
+
+# clone application from github
+RUN git clone https://github.com/juliusrueckin/ExperimentFrameworkBackend-2.0.git .
+
 # install pip
 RUN apt-get --assume-yes install python3-pip 
 
@@ -34,18 +46,6 @@ RUN rm -rf python-telegram-bot
 
 # clean up installations
 RUN make clean
-
-# set environment variables for conda and python app
-ENV PATH /opt/conda/bin:$PATH
-ENV APP /usr/src/app
-
-# create and change to working directory
-RUN mkdir -p $APP
-RUN cd $APP
-WORKDIR $APP
-
-# clone application from github
-RUN git clone https://github.com/juliusrueckin/ExperimentFrameworkBackend-2.0.git .
 
 # open port 8080 for bottle api
 EXPOSE 8080
